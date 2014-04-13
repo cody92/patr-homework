@@ -20,7 +20,7 @@ int main(void) {
 	pthread_attr_t attr;
 	int i, val;
 
-	if (!sem_init(Sem, 1, 1)) {
+	if (!sem_init(Sem, 1, 5)) {
 	} else {
 		printf("Eroare la initializarea semaforului Pompa libera \n");
 	}
@@ -33,6 +33,7 @@ int main(void) {
 	pthread_attr_init(&attr);
 
 	for (i = 0; i < 15; i++) {
+		sleep(1);
 		if (i != 0) {
 			if (pthread_create(Task + i, &attr, (void*) (*(tasks + 1)),
 					(void*) i) != 0) {
@@ -66,6 +67,7 @@ void* achitare(int v) {
 	while (1) {
 		sem_wait(Sem + 1);
 		printf("\nTest achitare\n");
+		sleep(8);
 		sem_post(Sem);
 	}
 }
