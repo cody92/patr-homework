@@ -5,7 +5,8 @@ PATR Homeworks
 <p>Modelarea accesului la o statie de benzina
 Clientii pot alimenta cu combustibil la o benzina in maniera self-service. Organizarea accesului
 este urmatoarea:
-</p>
+
+
 	<ul>
 		<li>
 		daca o pompa este libera, clientul o poate folosi;
@@ -21,6 +22,7 @@ este urmatoarea:
 		corespunzatoare.
 	</li>
 </ul>
+</p>
 <p>
 Sa se implementeze o aplicatie formata din mai multe taskuri, cu mecanismele specifice QNX,
 care sa simuleze functionarea specificata. Se vor considera urmatoarele doua cazuri:
@@ -34,12 +36,14 @@ care sa simuleze functionarea specificata. Se vor considera urmatoarele doua caz
 		incearca sa alimenteze.
 	</li>
 </ol>
-</p>
+
 	<ul>
 		<li>
 		<a href="https://docs.google.com/document/d/1_tC_zMdqW7gt5gbKVjFjHSELRajd6kXJ5KmmjQyHk4o/edit?usp=sharing" target="blank" >Documentation</a>
 	</li>
+	
 </ul>
+</p>
 <br />
 <br />
 <br />
@@ -50,7 +54,7 @@ depozita sau retrage anumite sume de bani din contul comun.
 Sa se implementeze o aplicatie formata din mai multe taskuri, cu mecanismele specifice QNX,
 care sa simuleze functionarea specificata. Aplicatia multitasking va fi formata din urmatoarele tipuri
 de taskuri:
-</p>
+
 	<ol>
 	<li>task depunere: va depune o suma in contul comun (va face o cerere de depunere);</li>
 		<li>task retragere: va incerca sa retraga o suma de bani din contul comun (va face o cerere de
@@ -65,3 +69,4 @@ de taskuri:
 		<a href="https://docs.google.com/document/d/1U4NeSNT98vvow49kn-eiv0dv3gdUPRsveOCw1B8fIPs/edit?usp=sharing" target="blank" >Documentation</a>
 	</li>
 </ul>
+</p>
