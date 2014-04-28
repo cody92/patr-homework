@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define NUMAR_SEMAFOARE 5
 /*
- * Sem[0] - semafor Pompa libera
- * Sem[1] - semafor Terminare alimentare
+ * Luam 5 semafoare pentru 5 pompe si un semafor pentru casa
  */
-sem_t Sem[2];
+sem_t Sem[NUMAR_SEMAFOARE], casa[2];
+int PlataCasa;
 
-void* achitare(int);
+void* achitare();
 void* alimentare(int);
 
 void* (*tasks[])(int) = { achitare, alimentare };
@@ -20,20 +21,21 @@ int main(void) {
 	pthread_attr_t attr;
 	int i, val;
 
-	if (!sem_init(Sem, 1, 5)) {
-	} else {
-		printf("Eroare la initializarea semaforului Pompa libera \n");
+	for (i = 0; i < NUMAR_SEMAFOARE; i++) {
+		if (!sem_init(Sem + i, 1, 0)) {
+		} else {
+			printf("Eroare la initializarea semaforului pentru poma %d! \n", i
+					+ 1);
+		}
 	}
 
-	if (!sem_init(Sem + 1, 1, 0)) {
+	if (!sem_init(casa, 1, 0) || !sem_init(casa + 1, 1, 0)) {
 	} else {
-		printf("Eroare la initializarea semaforului Terminat alimentare \n");
+		printf("Eroare la initializarea semaforului Casa libera \n");
 	}
 
 	pthread_attr_init(&attr);
-
 	for (i = 0; i < 15; i++) {
-		sleep(1);
 		if (i != 0) {
 			if (pthread_create(Task + i, &attr, (void*) (*(tasks + 1)),
 					(void*) i) != 0) {
@@ -58,23 +60,43 @@ int main(void) {
 	/**
 	 * Distrugem semafoarele
 	 */
-	sem_destroy(Sem + 1);
-	sem_destroy(Sem);
+	for (i = 0; i < NUMAR_SEMAFOARE; i++) {
+		sem_destroy(Sem + i);
+	}
+	sem_destroy(casa);
+	sem_destroy(casa + 1);
 	exit(0);
 }
 
-void* achitare(int v) {
+void* achitare() {
 	while (1) {
-		sem_wait(Sem + 1);
-		printf("\nTest achitare\n");
-		sleep(8);
-		sem_post(Sem);
+		//sem_wait(casa);
+		//sem_post(casa + 1);
+		printf("\nAchitare pompa:\n", PlataCasa);
+		sleep(5);
+		//sem_post(Sem + PlataCasa);
 	}
 }
 
 void* alimentare(int v) {
-	sem_wait(Sem);
-	printf("\nTest alimentare %d \n", v);
-	sem_post(Sem + 1);
+	printf("test %d\n",v);
+	int pompa = 0;
+
+	while (!sem_trywait(Sem + pompa)) {
+		pompa++;
+		if (pompa == NUMAR_SEMAFOARE) {
+			pompa = 0;
+		}
+	}
+	printf("pompa %d\n", pompa);
+	sem_wait(Sem + pompa);
+	printf("teste %d\n", pompa);
+	/*
+	printf("\nAlimentare pompa %d in valoare de %d \n", pompa, v);
+	sleep(v);
+	sem_post(casa);
+	//sem_wait(casa + 1);
+	PlataCasa = pompa;*/
+
 }
 
