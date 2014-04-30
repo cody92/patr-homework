@@ -3,6 +3,7 @@
 #include <semaphore.h>
 #include <stdlib.h>
 #include <math.h>
+#include <errno.h>
 
 #define NUMAR_SEMAFOARE 5
 /*
@@ -22,7 +23,7 @@ int main(void) {
 	int i, val;
 
 	for (i = 0; i < NUMAR_SEMAFOARE; i++) {
-		if (!sem_init(Sem + i, 1, 0)) {
+		if (!sem_init(Sem + i, 1, 2)) {
 		} else {
 			printf("Eroare la initializarea semaforului pentru poma %d! \n", i
 					+ 1);
@@ -36,7 +37,7 @@ int main(void) {
 
 	pthread_attr_init(&attr);
 	for (i = 0; i < 15; i++) {
-		if (i != 0) {
+		if (i < 14) {
 			if (pthread_create(Task + i, &attr, (void*) (*(tasks + 1)),
 					(void*) i) != 0) {
 				perror("pthread_create");
@@ -70,8 +71,7 @@ int main(void) {
 
 void* achitare() {
 	while (1) {
-		//sem_wait(casa);
-		//sem_post(casa + 1);
+		sem_wait(casa);
 		printf("\nAchitare pompa:\n", PlataCasa);
 		sleep(5);
 		//sem_post(Sem + PlataCasa);
@@ -79,8 +79,7 @@ void* achitare() {
 }
 
 void* alimentare(int v) {
-	printf("test %d\n",v);
-	int pompa = 0;
+	int pompa = 0, test;
 
 	while (!sem_trywait(Sem + pompa)) {
 		pompa++;
@@ -88,15 +87,12 @@ void* alimentare(int v) {
 			pompa = 0;
 		}
 	}
-	printf("pompa %d\n", pompa);
+	printf("test %d %d!\n", pompa, errno);
 	sem_wait(Sem + pompa);
-	printf("teste %d\n", pompa);
-	/*
 	printf("\nAlimentare pompa %d in valoare de %d \n", pompa, v);
 	sleep(v);
 	sem_post(casa);
-	//sem_wait(casa + 1);
-	PlataCasa = pompa;*/
+	PlataCasa = pompa;
 
 }
 
