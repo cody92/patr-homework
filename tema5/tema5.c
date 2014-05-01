@@ -12,6 +12,7 @@
 
 #define DEPUNERE  1
 #define RETRAGERE  2
+#define NUMAR_PROCESE 100
 
 int ChID;
 int PIDProces;
@@ -90,7 +91,7 @@ void * retragere(int suma) {
 int main() {
 	pthread_t Fir_Server, Operatii[100];
 	pthread_attr_t attr, attrO;
-	int i, rcvID;
+	int i, rcvID, numarCurentProcese = 0, test;
 	struct mesajSend *ClientMessage;
 	struct mesajReceive *ServerResponse;
 
@@ -110,7 +111,7 @@ int main() {
 	if (ChID == -1) {
 		perror("\tClient: eroare creare canal.\n");
 	}
-	for (i = 1; i <= 100; i++) {
+	for (i = 1; i <= NUMAR_PROCESE; i++) {
 		if (i % 10 == 0) {
 			if (pthread_create(Operatii + i, &attrO, (void*) &retragere,
 					(void*) i) != 0) {
@@ -125,8 +126,15 @@ int main() {
 			}
 		}
 	}
-
-	while (1) {
+	/*
+	for (i = 0; i < NUMAR_PROCESE; i++) {
+		if (pthread_join(*(Operatii + i), NULL) != 0) {
+			perror("pthread_join eroare");
+			return EXIT_FAILURE;
+		}
+	}
+	*/
+	while (numarCurentProcese < NUMAR_PROCESE) {
 		rcvID = MsgReceive(ChID, ClientMessage, sizeof(struct mesajSend), NULL);
 
 		switch (ClientMessage->tipCerere) {
@@ -154,15 +162,10 @@ int main() {
 
 			break;
 		}
+		numarCurentProcese++;
+		printf("test %d\n", numarCurentProcese);
 		MsgReply(rcvID, 0, ServerResponse, sizeof(struct mesajReceive));
 
-	}
-
-	for (i = 0; i < 15; i++) {
-		if (pthread_join(*(Operatii + i), NULL) != 0) {
-			perror("pthread_join");
-			return EXIT_FAILURE;
-		}
 	}
 	pthread_attr_destroy(&attr);
 	pthread_attr_destroy(&attrO);
